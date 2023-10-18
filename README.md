@@ -2,8 +2,9 @@
 
 I've stumbled upon a reproducible crash of upx-packed binaries in isolated
 Linux namespace. At first I though that this is related to recently [fixed
-error](https://github.com/upx/upx/pull/716) but that turned out not to be the
-case:
+error] but that turned out not to be the case:
+
+[fixed error]: https://github.com/upx/upx/pull/716
 
 - It's not caused by LZMA (both NRV2E_LE32 and LZMA compression produce
   failing binaries)
@@ -13,6 +14,9 @@ case:
 example of C hello world program that crashes after being packed by upx when
 being executed under
 [`unshare`](https://manpages.debian.org/bookworm/util-linux/unshare.1.en.html).
+Similar to [previous issue][fixed error] the program writes `/proc/self/exe`
+to stderr before returning exit code 127.
+
 Execute `make demo` to run binaries built by me, or `make clean demo` to
 rebuild binaries on your machine before executing (requires C compiler).
 
