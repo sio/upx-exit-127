@@ -10,10 +10,11 @@ case:
 - It's reproducible with latest `devel4` artifacts
 
 [This repo](https://github.com/sio/upx-exit-127) contains minimal reproducible
-example of Go hello world program that crashes after being packed by upx when
-being executed under `unshare`. Execute `make demo` to run binaries built by
-me, or `make clean demo` to rebuild binaries on your machine before executing
-(requires go).
+example of C hello world program that crashes after being packed by upx when
+being executed under
+[`unshare`](https://manpages.debian.org/bookworm/util-linux/unshare.1.en.html).
+Execute `make demo` to run binaries built by me, or `make clean demo` to
+rebuild binaries on your machine before executing (requires C compiler).
 
 I first noticed this failure with UPX 3.96 and was able to reproduce it with
 UPX 4.2.0-git-c9550b48d8e7 (current devel4). I'm running Debian Bullseye
@@ -24,7 +25,7 @@ highlighting on GitHub):
 
 ```console
 $ rm -f demo-unpacked demo-packed
-$ go build -o demo-unpacked
+$ cc demo.c -o demo-unpacked -static
 $ upx -V
 upx 4.2.0-git-c9550b48d8e7
 UCL data compression library 1.03
@@ -46,7 +47,7 @@ UPX git-c9550b  Markus Oberhumer, Laszlo Molnar & John Reiser    Oct 5th 2023
 
         File size         Ratio      Format      Name
    --------------------   ------   -----------   -----------
-   1845826 ->   1146280   62.10%   linux/amd64   demo-packed
+    809800 ->    315472   38.96%   linux/amd64   demo-packed
 
 Packed 1 file.
 
@@ -58,11 +59,19 @@ $ upx --fileinfo demo-packed
 UPX git-c9550b  Markus Oberhumer, Laszlo Molnar & John Reiser    Oct 5th 2023
 
 demo-packed [amd64-linux.elf, linux/amd64]
-   1146280 bytes, compressed by UPX 14, method 8, level 7, filter 0x49/0x17
+    315472 bytes, compressed by UPX 14, method 8, level 7, filter 0x49/0x1d
 
 WARNING: this is an unstable beta version - use for testing only! Really.
-$ unshare --map-root-user \
-unshare --root=. \
-./demo-packed
-/proc/self/exemake: *** [Makefile:3: demo] Error 127
+$ ./demo-unpacked
+It works!
+$ ./demo-packed
+It works!
+$ unshare --map-root-user unshare --root=. ./demo-unpacked
+It works!
+$ unshare --map-root-user unshare --root=. ./demo-packed
+/proc/self/exemake: *** [Makefile:6: demo] Error 127
 ```
+
+Unfortunately I lack the fine skills @kevingosse demonstrated when
+troubleshooting previous similar failure, so I will need your guidance if any
+further input is needed.
