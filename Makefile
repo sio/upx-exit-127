@@ -9,8 +9,9 @@ demo-unpacked: demo.go
 
 demo-packed: demo-unpacked
 	upx -V
-	upx $< -o $@ --best --lzma
+	upx $< -o $@
 	touch $@
+	upx --fileinfo $@
 
 .PHONY: clean
 clean:
