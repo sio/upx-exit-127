@@ -1,3 +1,9 @@
+>
+> [This issue](https://github.com/upx/upx/issues/721)
+> was fixed in upx 4.2.1, many thanks to
+> [@jreiser](https://github.com/jreiser)!
+>
+
 # Packed binaries crash with exit 127 on linux/amd64
 
 I've stumbled upon a reproducible crash of upx-packed binaries in isolated
